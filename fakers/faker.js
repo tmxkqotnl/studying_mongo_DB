@@ -3,7 +3,7 @@
 */
 
 import faker from "faker";
-import { User, Blog, Comment } from "./src/models";
+import { User, Blog, Comment } from "../src/models";
 
 const generateFakeData = async (userCount, blogsPerUser, commentsPerUser) => {
   try {
