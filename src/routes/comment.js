@@ -74,4 +74,34 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.patch("/:commentId", async (req, res) => {
+  const { commentId } = req.params;
+  const { content } = req.body;
+
+  if (typeof content !== "string")
+    return res.status(400).json({
+      message: "content is required",
+    });
+
+  // comment 모델 수정과 blog의 해당하는 특정 comment 수정
+  const [comment] = await Promise.all([
+    Comment.findOneAndUpdate({ _id: commentId }, { content }, { new: true }),
+    Blog.updateOne(
+      { "comments._id": commentId },
+      { "comments.$.content": content }
+    ),
+  ]);
+
+  return res.send({ comment });
+});
+router.delete("/:commentId", async (req, res) => {
+  const { commentId } = req.params;
+  const comment = await Comment.findOneAndDelete({ _id: commentId });
+  await Blog.updateOne(
+    { "comments._id": commentId },
+    { $pull: { comments: { _id: commentId } } }
+  );
+  return res.send({ comment });
+});
+
 export default router;

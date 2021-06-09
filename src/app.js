@@ -17,7 +17,7 @@ const server = async () => {
       useCreateIndex: true,
       useFindAndModify: false,
     });
-    //mongoose.set("debug", true); // for dev
+    mongoose.set("debug", true); // for dev
     console.log("DB is connected ...");
 
     app.set("port", process.env.PORT ? process.env.PORT : 5000);
@@ -30,7 +30,7 @@ const server = async () => {
 
     app.listen(app.get("port"), async () => {
       console.log("listening port " + app.get("port"));
-      await generateFakeData(10, 5, 15);
+      //await generateFakeData(10, 5, 15);
     });
   } catch (err) {
     console.error(err);

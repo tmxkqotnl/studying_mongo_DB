@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-import { User } from "../models";
+import { Blog, User, Comment } from "../models";
 import { isValidObjectId } from "mongoose";
 
 router.get("/", async (req, res) => {
@@ -84,12 +84,16 @@ router.delete("/:userId", async (req, res) => {
         message: "유효하지 않은 유저입니다.",
       });
 
-    const delData = await User.findByIdAndDelete({ _id: userId });
-    if (!delData) {
-      return res.status(400).json({
-        message: "유저가 존재하지 않습니다.",
-      });
-    }
+    const [delData] = await Promise.all([
+      User.findByIdAndDelete({ _id: userId }),
+      Blog.deleteMany({ "user._id": userId }),
+      Blog.updateMany(
+        { "comments.user": userId },
+        { $pull: { comments: { user: userId } } }
+      ),
+      Comment.deleteMany({ user: userId }),
+    ]);
+
     return res.status(200).json({
       user: delData,
     });
@@ -147,15 +151,31 @@ router.delete("/:userId", async (req, res) => {
 router.put("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    const { age } = req.query;
+    const { age, name } = req.body;
+    if (!isValidObjectId(userId))
+      return res.status(400).json({
+        message: "user id is invalid",
+      });
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(400).json({
         message: "no user info",
       });
     }
-    if (age) user.age = age;
-    //user.name = {};
+    if (typeof age === "number" && age) user.age = age;
+    if (typeof name === "object" && name) {
+      user.name = name;
+      await Blog.updateMany({ "user._id": userId }, { "user.name": name });
+      // 중요
+      await Blog.updateMany(
+        {},
+        {
+          "comments.$[elem].userFullName": `${name.firstName} ${name.lastName}`,
+        },
+        { arrayFilters: [{ "elem.user": userId }] }
+      );
+    }
     await user.save();
 
     return res.json({ user });
