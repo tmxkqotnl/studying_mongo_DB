@@ -2,16 +2,20 @@
   "name": "mongoDB_practice",
   "version": "1.0.0",
   "description": "mongoDB practical exmaple",
-  "main": "app.js",
+  "main": "./src/app.js",
   "scripts": {
-    "start": "nodemon --exec babel-node app.js"
+    "start": "nodemon --ignore client*.js --config nodemon.json --exec babel-node ./src/app.js",
+    "client": "nodemon --ignore ./src/* --exec babel-node ./clientPopulateJS.js"
   },
   "author": "tmxkqotnl",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^5.12.10"
+    "faker": "^5.5.3",
+    "mongoose": "^5.12.10",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.3",

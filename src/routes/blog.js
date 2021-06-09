@@ -1,13 +1,21 @@
-import express from "express";
-const router = express.Router();
-import { Blog } from "../model/Blog";
-import { User } from "../model/User";
+import { Router } from "express";
+const router = Router();
+import { Blog, User } from "../models";
 import { isValidObjectId } from "mongoose";
+import commentRouter from "./comment";
 
+router.use("/:blogId/comment", commentRouter);
+
+// using populate
 router.get("/", async (req, res) => {
   try {
-    const blogs = await Blog.find({});
-    return res.send(blogs);
+    const blogs = await Blog.find({})
+      .limit(20)
+      .populate([
+        { path: "user" },
+        { path: "comments", populate: { path: "user" } },
+      ]); // temporary
+    return res.send({ blogs });
   } catch (error) {
     console.log(error);
     res.status(500).json({

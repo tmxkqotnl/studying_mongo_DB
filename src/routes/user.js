@@ -1,7 +1,7 @@
-import express from 'express';
-import {User} from '../model/User';
-import {isValidObjectId} from 'mongoose';
-const router = express.Router();
+import { Router } from "express";
+const router = Router();
+import { User } from "../models";
+import { isValidObjectId } from "mongoose";
 
 router.get("/", async (req, res) => {
   try {
@@ -11,11 +11,10 @@ router.get("/", async (req, res) => {
       return res.status(200).json({
         message: "유저 정보가 없습니다.",
       });
-    } else {
-      return res.status(200).json({
-        user: userData,
-      });
     }
+    return res.status(200).json({
+      user: userData,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
@@ -32,13 +31,13 @@ router.get("/:userId", async (req, res) => {
       });
 
     const user = await User.findOne({ _id: req.params.userId });
-    
+
     if (!user) {
       return res.status(400).json({
         message: "유저가 존재하지 않습니다.",
       });
     }
-    return res.status(200).json({ user });
+    return res.status(200).send({ user });
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -145,27 +144,27 @@ router.delete("/:userId", async (req, res) => {
   mongoose 내장 기능(에러 검출)을 이용하려면 이 방법을 사용
 */
 
-router.put('/:userId',async (req,res)=>{
-  try{
-    const {userId} = req.params;
-    const {age} = req.query;
+router.put("/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { age } = req.query;
     const user = await User.findById(userId);
-    if(!user){
+    if (!user) {
       return res.status(400).json({
-        message:"no user info",
+        message: "no user info",
       });
     }
-    if(age) user.age = age;
-    //user.name = {}; 
-    await user.save(); 
-    
-    return res.json({user});
-  }catch(err){
+    if (age) user.age = age;
+    //user.name = {};
+    await user.save();
+
+    return res.json({ user });
+  } catch (err) {
     console.log(err);
-    if(err._message.includes("validation failed")){
+    if (err._message.includes("validation failed")) {
       return res.status(400).json({
-        message:"입력 오류"
-      })
+        message: "입력 오류",
+      });
     }
   }
 });
