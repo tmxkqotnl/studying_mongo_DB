@@ -13,6 +13,7 @@ router.get("/", async (req, res) => {
   const comments = await Comment.find({ blog: blogId });
   return res.send({ comments });
 });
+
 router.post("/", async (req, res) => {
   try {
     const { blogId } = req.params;
@@ -55,9 +56,16 @@ router.post("/", async (req, res) => {
       });
     }
 
-    const newComment = new Comment({ user, blog, content });
-    await newComment.save();
-
+    const newComment = new Comment({
+      user,
+      blog,
+      userFullName: `${user.name.firstName} ${user.name.lastName}`,
+      content,
+    });
+    await Promise.all([
+      newComment.save(),
+      Blog.updateOne({ _id: blogId }, { $push: { comments: newComment } }),
+    ]);
     return res.status(200).send(newComment);
   } catch (error) {
     return res.json({

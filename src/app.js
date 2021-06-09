@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import { generateFakeData } from "../faker";
+import { generateFakeData } from "../fakers/faker2";
 import { userRouter, blogRouter } from "./routes";
 import { Key } from "./config/keys";
 
@@ -17,8 +17,7 @@ const server = async () => {
       useCreateIndex: true,
       useFindAndModify: false,
     });
-    mongoose.set("debug", true); // for dev
-    await generateFakeData(20, 5, 50);
+    //mongoose.set("debug", true); // for dev
     console.log("DB is connected ...");
 
     app.set("port", process.env.PORT ? process.env.PORT : 5000);
@@ -29,8 +28,9 @@ const server = async () => {
     app.use("/user", userRouter);
     app.use("/blog", blogRouter);
 
-    app.listen(app.get("port"), () => {
+    app.listen(app.get("port"), async () => {
       console.log("listening port " + app.get("port"));
+      await generateFakeData(10, 5, 15);
     });
   } catch (err) {
     console.error(err);

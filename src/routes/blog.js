@@ -9,12 +9,11 @@ router.use("/:blogId/comment", commentRouter);
 // using populate
 router.get("/", async (req, res) => {
   try {
-    const blogs = await Blog.find({})
-      .limit(20)
-      .populate([
+    const blogs = await Blog.find({}).limit(20);
+    /* .populate([
         { path: "user" },
         { path: "comments", populate: { path: "user" } },
-      ]); // temporary
+      ]); */
     return res.send({ blogs });
   } catch (error) {
     console.log(error);

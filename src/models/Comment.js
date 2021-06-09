@@ -11,6 +11,10 @@ const commentSchema = new Schema(
       required: true,
       ref: "user",
     },
+    userFullName: {
+      type: String,
+      required: true,
+    },
     blog: {
       type: Types.ObjectId,
       required: true,
@@ -23,4 +27,6 @@ const commentSchema = new Schema(
   }
 );
 
-export const Comment = new model("comment", commentSchema);
+const Comment = new model("comment", commentSchema);
+
+export { Comment, commentSchema };
