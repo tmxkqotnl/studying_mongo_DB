@@ -35,12 +35,20 @@ const blogSchema = new Schema(
       },
     },
     comments: [commentSchema],
+    commentsCount: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
   },
   {
     timestamps: true,
     versionKey: false,
   }
 );
+
+blogSchema.index({ "user._id": 1, updatedAt: 1 });
+blogSchema.index({ title: "text", content: "text" });
 
 /* // 가상 키
 blogSchema.virtual("comments", {
