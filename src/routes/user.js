@@ -58,6 +58,7 @@ router.post("/", async (req, res) => {
         err: "이메일이 필요합니다.",
       });
     }
+    user.fullName = `${user.name.firstName} ${user.name.lastName}`;
     const savedUser = await user.save();
     return res.status(200).json({
       user: savedUser,

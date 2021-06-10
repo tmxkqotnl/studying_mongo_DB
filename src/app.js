@@ -21,7 +21,7 @@ const server = async () => {
     console.log("DB is connected ...");
 
     app.set("port", process.env.PORT ? process.env.PORT : 5000);
-    app.use(express.json()); // json 형식 허용
+    app.use(express.json());
     app.use(
       process.env.NODE_ENV === "dev" ? morgan("dev") : morgan("combined")
     );
@@ -30,7 +30,8 @@ const server = async () => {
 
     app.listen(app.get("port"), async () => {
       console.log("listening port " + app.get("port"));
-      //await generateFakeData(10, 5, 15);
+      // fake data generator
+      // await generateFakeData(10, 2, 15);
     });
   } catch (err) {
     console.error(err);

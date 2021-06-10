@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-import { Blog, User } from "../models";
+import { Blog, User, Comment } from "../models";
 import { isValidObjectId } from "mongoose";
 import commentRouter from "./comment";
 
@@ -9,7 +9,12 @@ router.use("/:blogId/comment", commentRouter);
 // using populate
 router.get("/", async (req, res) => {
   try {
-    const blogs = await Blog.find({}).limit(20);
+    const { page = 0 } = req.query;
+    const curPage = parseInt(page) * 3;
+    const blogs = await Blog.find({})
+      .sort({ updatedAt: -1 })
+      .skip(curPage)
+      .limit(3);
     /* .populate([
         { path: "user" },
         { path: "comments", populate: { path: "user" } },
@@ -57,13 +62,14 @@ router.get("/:blogId", async (req, res) => {
     if (!isValidObjectId(blogId)) return res.json({ message: "invalide blog" });
 
     const blog = await Blog.findById(blogId);
+    //const commentCount = await Comment.find({ blog: blogId }).countDocuments();
     if (!blog) {
       return res.json({
         message: "no matched blog",
       });
     }
 
-    return res.send(blog);
+    return res.send({ blog, commentCount });
   } catch (error) {
     console.log(error);
     res.status(500).json({

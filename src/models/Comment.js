@@ -10,6 +10,7 @@ const commentSchema = new Schema(
       type: Types.ObjectId,
       required: true,
       ref: "user",
+      index: true,
     },
     userFullName: {
       type: String,
@@ -26,6 +27,8 @@ const commentSchema = new Schema(
     versionKey: false,
   }
 );
+
+commentSchema.index({ blog: 1, createdAt: -1 });
 
 const Comment = new model("comment", commentSchema);
 

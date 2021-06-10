@@ -17,15 +17,19 @@ const generateFakeData = async (userCount, blogsPerUser, commentsPerUser) => {
     let comments = [];
 
     for (let i = 0; i < userCount; i++) {
+      const firstName = faker.name.firstName();
+      const lastName = faker.name.lastName();
+      const fullName = `${firstName} ${lastName}`;
       users.push(
         new User({
           username: faker.internet.userName() + parseInt(Math.random() * 100),
           name: {
-            firstName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
+            firstName,
+            lastName,
           },
           age: 10 + parseInt(Math.random() * 50),
           email: faker.internet.email(),
+          fullName,
         })
       );
     }
